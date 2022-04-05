@@ -91,7 +91,7 @@ void setup(){
   }
   
   // Team0
-  team0_tank0_startpos = new PVector(50, 50);
+  team0_tank0_startpos = new PVector(350, 50);
   team0_tank1_startpos = new PVector(50, 150);
   team0_tank2_startpos = new PVector(50, 250);
 
@@ -119,6 +119,10 @@ void setup(){
   allTanks[3] = teams[1].tanks[0];
   allTanks[4] = teams[1].tanks[1];
   allTanks[5] = teams[1].tanks[2];
+  
+  for (Tank tank : allTanks) {
+    grid.addContent(tank);
+  }
   
   loadShots();
   userControl = false;

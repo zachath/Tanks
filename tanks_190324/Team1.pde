@@ -20,20 +20,21 @@ class Team1 extends Team {
     boolean started;
     Node currentNode;
     
+    int currentCol, currentRow;
+    
+    boolean searching;
+    
     //Neighbouring nodes.
-    //int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1}; //x
-    //int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1}; //y
+    int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
+    int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
     
-    int[] col_directions = {0, 0, 1, -1}; //x
-    int[] row_directions = {-1, 1, 0, 0}; //y
-    
-    boolean[][] visited = new boolean[grid.rows][grid.cols];
+    boolean[][] visited = new boolean[grid.cols][grid.rows];
     
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
       currentNode = grid.getNearestNode(startpos);
-      visited[currentNode.row][currentNode.col] = true;
+      visited[currentNode.col][currentNode.row] = true;
     }
     
     public void initialize() {
@@ -48,28 +49,66 @@ class Team1 extends Team {
         int newCol = currentNode.col + col_directions[i];
         
         //Skip out of bounds and already visited nodes.
-        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols || visited[newRow][newCol]) {
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols || visited[newCol][newRow]) {
            continue;
         }
         
-        neighbouringNodes.add(grid.nodes[newRow][newCol]);
-        visited[newRow][newCol] = true;
+        Node n = grid.nodes[newCol][newRow];
+        neighbouringNodes.add(n);
+        visited[newCol][newRow] = true;
+        
+        lookForTanks(n);
+      }
+      
+      if (neighbouringNodes.size() == 0) {
+        searching = false;
+        println("Failed");
+        return;
+      }
+      
+      println("Currently at: " + currentNode.col + ":" + currentNode.row);
+      println("neighbouringNodes:");
+      for (Node ne : neighbouringNodes) {
+        println("Pos: " + ne.col + ":" + ne.row);
       }
       
       Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+      println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
       moveTo(node.position);
-      //currentNode = node;
+    }
+    
+    public void lookForTanks(Node n) {
+      if (n.content() instanceof Tank) {
+          Tank other = (Tank) n.content();
+          
+          if (other.team.id != this.team.id) {
+            println("Found enemy tank, stoping search.");
+            searching = false;
+            return;
+          }
+          else {
+            println("Found friendly tank, searching...");
+          }
+        }
+    }
+    
+    public void message_collision(Tank other) {
+      if (other.team.id != this.team.id) {
+        println("Found enemy tank, stopping search.");
+        searching = false;
+      }
     }
     
     public void updateLogic() {
       if (!started) {
         started = true;
+        searching = true;
         patrol();
       }
 
       if (!this.userControlled) {
 
-        if (this.idle_state) {
+        if (this.idle_state && searching) {
           patrol();
         }
       }
