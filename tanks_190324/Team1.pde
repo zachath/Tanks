@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 class Team1 extends Team {
 
   Team1(int team_id, int tank_size, color c, 
@@ -6,7 +8,7 @@ class Team1 extends Team {
     PVector tank2_startpos, int tank2_id, CannonBall ball2) {
     super(team_id, tank_size, c, tank0_startpos, tank0_id, ball0, tank1_startpos, tank1_id, ball1, tank2_startpos, tank2_id, ball2);  
 
-    tanks[0] = new Tank(tank0_id, this, this.tank0_startpos, this.tank_size, ball0);
+    tanks[0] = new AgentTank(tank0_id, this, this.tank0_startpos, this.tank_size, ball0);
     tanks[1] = new Tank(tank1_id, this, this.tank1_startpos, this.tank_size, ball1);
     tanks[2] = new Tank(tank2_id, this, this.tank2_startpos, this.tank_size, ball2);
 
@@ -15,11 +17,62 @@ class Team1 extends Team {
   }
 
   public class AgentTank extends Tank {
+    boolean started;
+    Node currentNode;
+    
+    //Neighbouring nodes.
+    //int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1}; //x
+    //int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1}; //y
+    
+    int[] col_directions = {0, 0, 1, -1}; //x
+    int[] row_directions = {-1, 1, 0, 0}; //y
+    
+    boolean[][] visited = new boolean[grid.rows][grid.cols];
+    
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
+      started = false;
+      currentNode = grid.getNearestNode(startpos);
+      visited[currentNode.row][currentNode.col] = true;
     }
     
     public void initialize() {
+    }
+    
+    //Random walk.
+    public void patrol() {
+      currentNode = grid.getNearestNode(getRealPosition());
+      ArrayList<Node> neighbouringNodes = new ArrayList<>();
+      for (int i = 0; i < 4; i++) {
+        int newRow = currentNode.row + row_directions[i];
+        int newCol = currentNode.col + col_directions[i];
+        
+        //Skip out of bounds and already visited nodes.
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols || visited[newRow][newCol]) {
+           continue;
+        }
+        
+        neighbouringNodes.add(grid.nodes[newRow][newCol]);
+        visited[newRow][newCol] = true;
+      }
+      
+      Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+      moveTo(node.position);
+      //currentNode = node;
+    }
+    
+    public void updateLogic() {
+      if (!started) {
+        started = true;
+        patrol();
+      }
+
+      if (!this.userControlled) {
+
+        if (this.idle_state) {
+          patrol();
+        }
+      }
     }
   }
 
