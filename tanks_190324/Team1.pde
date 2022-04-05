@@ -44,25 +44,39 @@ class Team1 extends Team {
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
       ArrayList<Node> neighbouringNodes = new ArrayList<>();
+      ArrayList<Node> visitedNeighbours = new ArrayList<>();
+      
       for (int i = 0; i < 4; i++) {
         int newRow = currentNode.row + row_directions[i];
         int newCol = currentNode.col + col_directions[i];
         
         //Skip out of bounds and already visited nodes.
-        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols || visited[newCol][newRow]) {
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
            continue;
         }
         
         Node n = grid.nodes[newCol][newRow];
+        
+        if (visited[newCol][newRow]) {
+          visitedNeighbours.add(n);
+          continue;
+        }
+        
         neighbouringNodes.add(n);
         visited[newCol][newRow] = true;
         
-        lookForTanks(n);
+        if (lookForTanks(n)) {
+          return;
+        }
       }
       
       if (neighbouringNodes.size() == 0) {
-        searching = false;
+        /*searching = false;
         println("Failed");
+        return;*/
+        Node node = visitedNeighbours.get((int) random(visitedNeighbours.size()));
+        println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
+        moveTo(node.position);
         return;
       }
       
@@ -77,19 +91,20 @@ class Team1 extends Team {
       moveTo(node.position);
     }
     
-    public void lookForTanks(Node n) {
+    public boolean lookForTanks(Node n) {
       if (n.content() instanceof Tank) {
           Tank other = (Tank) n.content();
           
           if (other.team.id != this.team.id) {
             println("Found enemy tank, stoping search.");
             searching = false;
-            return;
           }
           else {
             println("Found friendly tank, searching...");
           }
         }
+        
+        return !searching;
     }
     
     public void message_collision(Tank other) {
