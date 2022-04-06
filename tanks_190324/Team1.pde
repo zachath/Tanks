@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 class Team1 extends Team {
 
@@ -23,6 +24,9 @@ class Team1 extends Team {
     int currentCol, currentRow;
     
     boolean searching;
+    boolean homeBound;
+    
+    Stack<Node> pathHome = new Stack<>();
     
     //Neighbouring nodes.
     int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
@@ -35,6 +39,7 @@ class Team1 extends Team {
       started = false;
       currentNode = grid.getNearestNode(startpos);
       visited[currentNode.col][currentNode.row] = true;
+      pathHome.push(currentNode);
     }
     
     public void initialize() {
@@ -46,17 +51,18 @@ class Team1 extends Team {
       ArrayList<Node> neighbouringNodes = new ArrayList<>();
       ArrayList<Node> visitedNeighbours = new ArrayList<>();
       
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < col_directions.length; i++) {
         int newRow = currentNode.row + row_directions[i];
         int newCol = currentNode.col + col_directions[i];
         
-        //Skip out of bounds and already visited nodes.
+        //Skip out of bounds.
         if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
            continue;
         }
         
         Node n = grid.nodes[newCol][newRow];
         
+        //Skip already visited nodes, but also save them incase they are the only alternative.
         if (visited[newCol][newRow]) {
           visitedNeighbours.add(n);
           continue;
@@ -71,22 +77,14 @@ class Team1 extends Team {
       }
       
       if (neighbouringNodes.size() == 0) {
-        /*searching = false;
-        println("Failed");
-        return;*/
         Node node = visitedNeighbours.get((int) random(visitedNeighbours.size()));
         println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
         moveTo(node.position);
         return;
       }
       
-      println("Currently at: " + currentNode.col + ":" + currentNode.row);
-      println("neighbouringNodes:");
-      for (Node ne : neighbouringNodes) {
-        println("Pos: " + ne.col + ":" + ne.row);
-      }
-      
       Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+      pathHome.push(node);
       println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
       moveTo(node.position);
     }
@@ -98,6 +96,7 @@ class Team1 extends Team {
           if (other.team.id != this.team.id) {
             println("Found enemy tank, stoping search.");
             searching = false;
+            homeBound = true;
           }
           else {
             println("Found friendly tank, searching...");
@@ -105,6 +104,16 @@ class Team1 extends Team {
         }
         
         return !searching;
+    }
+    
+    public void moveAlongHome() {
+      if (pathHome.empty()) {
+        println("Should be home now");
+        homeBound = false;
+      }
+      else {
+        moveTo(pathHome.pop().position);
+      }
     }
     
     public void message_collision(Tank other) {
@@ -125,6 +134,9 @@ class Team1 extends Team {
 
         if (this.idle_state && searching) {
           patrol();
+        }
+        else if (this.idle_state && homeBound) {
+          moveAlongHome();
         }
       }
     }
