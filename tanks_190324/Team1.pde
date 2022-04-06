@@ -190,9 +190,11 @@ class Team1 extends Team {
                 list.remove(i);
             }
         }
-
         if (list.size() < 2) {
           list.clear();
+        }
+        for(Node n : list) {
+          grid.changeColorOfNode(n, color(0, 34, 255));
         }
         return list;
     }
@@ -204,9 +206,7 @@ class Team1 extends Team {
     //DS9 reference.
     public void moveAlongHome() {
       if (!pathHome.isEmpty()) {
-        Node n = pathHome.poll();
-        moveTo(n.position);
-        grid.changeColorOfNode(n, color(0, 34, 255));
+        moveTo(pathHome.poll().position);
       }
       else {
         homeBound = false;
