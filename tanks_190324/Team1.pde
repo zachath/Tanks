@@ -1,6 +1,7 @@
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.Queue;
 
 class Team1 extends Team {
 
@@ -28,6 +29,8 @@ class Team1 extends Team {
     boolean homeBound;
     
     HashMap<Node, ArrayList<Node>> internalGraph = new HashMap<>();
+    Node homeNode;
+    LinkedList<Node> pathHome = new LinkedList<>();
     
     //Neighbouring nodes.
     int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
@@ -39,6 +42,7 @@ class Team1 extends Team {
       super(id, team, startpos, diameter, ball);
       started = false;
       currentNode = grid.getNearestNode(startpos);
+      homeNode = currentNode;
       visited[currentNode.col][currentNode.row] = true;
       connectNodes(currentNode, getNeighbours(currentNode));
     }
@@ -126,23 +130,78 @@ class Team1 extends Team {
             println("Found enemy tank, stoping search.");
             searching = false;
             homeBound = true;
-          }
-          else {
-            println("Found friendly tank, searching...");
+            findShortestPathHome();
           }
         }
         
         return !searching;
     }
     
+    //BFS
+    public void findShortestPathHome() {
+      Node start = grid.getNearestNode(getRealPosition());
+      LinkedList<Node> visited = new LinkedList<>();
+      
+      if (start.equals(homeNode)) {
+        visited.add(start);
+        pathHome = visited;
+        return;
+      }
+      
+      Queue<Node> queue = new LinkedList<>();
+      queue.add(start);
+      
+      while(!queue.isEmpty()) {
+        Node current = queue.poll();
+        
+        if (visited.contains(current)) {
+          continue;
+        }
+        
+        visited.add(current);
+        
+        for (Node n : internalGraph.get(current)) {
+          if (n.equals(homeNode)) {
+            visited.add(n);
+            queue.clear();
+            break;
+          }
+          queue.add(n);
+        }
+      }
+      
+      pathHome = trim(visited);
+      println("Done with pathing");
+      return;
+    }
+    
+    public LinkedList<Node> trim(LinkedList<Node> list) {
+      for(int i = list.size() - 1; i > 0; i--) {
+            if(i > 2 && nodeIsNotPartOfShortestPath(list.get(i), list.get(i - 1), list.get(i - 2)))  {
+                list.set(i - 1, list.get(i));
+                list.remove(i);
+            }
+        }
+
+        if (list.size() < 2) {
+          list.clear();
+        }
+        return list;
+    }
+    
+    private boolean nodeIsNotPartOfShortestPath(Node currentNode, Node nextNode, Node nextNextNode) {
+        return !internalGraph.get(currentNode).contains(nextNode) || internalGraph.get(nextNextNode).contains(currentNode);
+    }
+    
+    //DS9 reference.
     public void moveAlongHome() {
-      /*if (pathHome.empty()) {
-        println("Should be home now");
-        homeBound = false;
+      if (!pathHome.isEmpty()) {
+        moveTo(pathHome.poll().position);
       }
       else {
-        moveTo(pathHome.pop().position);
-      }*/
+        homeBound = false;
+        println("Should be home.");
+      }
     }
     
     public void message_collision(Tank other) {
