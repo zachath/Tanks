@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.HashMap;
 
 class Team1 extends Team {
 
@@ -26,7 +27,7 @@ class Team1 extends Team {
     boolean searching;
     boolean homeBound;
     
-    Stack<Node> pathHome = new Stack<>();
+    HashMap<Node, ArrayList<Node>> internalGraph = new HashMap<>();
     
     //Neighbouring nodes.
     int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
@@ -39,7 +40,7 @@ class Team1 extends Team {
       started = false;
       currentNode = grid.getNearestNode(startpos);
       visited[currentNode.col][currentNode.row] = true;
-      pathHome.push(currentNode);
+      connectNodes(currentNode, getNeighbours(currentNode));
     }
     
     public void initialize() {
@@ -48,12 +49,60 @@ class Team1 extends Team {
     //Random walk.
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
+      ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
+      ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
+      
+      connectNodes(currentNode, neighbouringNodes);
+      
+      for (Node n : neighbouringNodes) {
+        if (lookForTanks(n)) {
+          return;
+        }
+        
+        if (!visited[n.col][n.row]) {
+          unvisitedNeighbours.add(n);
+        }
+      }
+      
+      println("Neighbours: " + neighbouringNodes.size());
+      println("Unvisited: " + unvisitedNeighbours.size());
+      
+      if (unvisitedNeighbours.size() == 0) {
+        Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+        moveTo(node.position);
+      }
+      else {
+        Node node = unvisitedNeighbours.get((int) random(unvisitedNeighbours.size()));
+        moveTo(node.position);
+      }
+    }
+    
+    public void connectNodes(Node current, ArrayList<Node> nodes) {
+      if (internalGraph.containsKey(current)) {
+        internalGraph.get(current).addAll(nodes);
+      }
+      else {
+        internalGraph.put(current, nodes);
+      }
+      
+      for (Node node : nodes) {
+        if (internalGraph.containsKey(node) && !internalGraph.get(node).contains(current)) {
+          internalGraph.get(node).add(current);
+        }
+      else {
+          ArrayList<Node> tmp = new ArrayList<>();
+          tmp.add(current);
+          internalGraph.put(node, tmp);
+        }
+      }
+    }
+    
+    public ArrayList<Node> getNeighbours(Node current) {
       ArrayList<Node> neighbouringNodes = new ArrayList<>();
-      ArrayList<Node> visitedNeighbours = new ArrayList<>();
       
       for (int i = 0; i < col_directions.length; i++) {
-        int newRow = currentNode.row + row_directions[i];
         int newCol = currentNode.col + col_directions[i];
+        int newRow = currentNode.row + row_directions[i];
         
         //Skip out of bounds.
         if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
@@ -62,31 +111,11 @@ class Team1 extends Team {
         
         Node n = grid.nodes[newCol][newRow];
         
-        //Skip already visited nodes, but also save them incase they are the only alternative.
-        if (visited[newCol][newRow]) {
-          visitedNeighbours.add(n);
-          continue;
-        }
-        
         neighbouringNodes.add(n);
-        visited[newCol][newRow] = true;
-        
-        if (lookForTanks(n)) {
-          return;
-        }
       }
       
-      if (neighbouringNodes.size() == 0) {
-        Node node = visitedNeighbours.get((int) random(visitedNeighbours.size()));
-        println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
-        moveTo(node.position);
-        return;
-      }
-      
-      Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
-      pathHome.push(node);
-      println("Moving to: " + node.position + "(" + + node.col + ":" + node.row + ")");
-      moveTo(node.position);
+      visited[currentNode.col][currentNode.row] = true;
+      return neighbouringNodes;
     }
     
     public boolean lookForTanks(Node n) {
@@ -107,13 +136,13 @@ class Team1 extends Team {
     }
     
     public void moveAlongHome() {
-      if (pathHome.empty()) {
+      /*if (pathHome.empty()) {
         println("Should be home now");
         homeBound = false;
       }
       else {
         moveTo(pathHome.pop().position);
-      }
+      }*/
     }
     
     public void message_collision(Tank other) {
