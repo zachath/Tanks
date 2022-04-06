@@ -9,6 +9,7 @@ class Node {
   int col, row;
   
   Sprite content;
+  color c;
   boolean isEmpty;
   
   //***************************************************
@@ -27,6 +28,7 @@ class Node {
     
     this.content = null;
     this.isEmpty = true;
+    c = color(205); //tillagd av oss
   } 
 
   //***************************************************  
@@ -53,5 +55,10 @@ class Node {
   //***************************************************
   Sprite content() {
     return this.content;
+  }
+  
+  //***************************************************
+  void setColor(color c) {
+    this.c = c;
   }
 }

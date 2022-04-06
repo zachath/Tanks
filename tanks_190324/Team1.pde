@@ -115,8 +115,16 @@ class Team1 extends Team {
         
         Node n = grid.nodes[newCol][newRow];
         
+        //Change color of neighbor node to "seen" if it hasn't been visited
+        if(!visited[newCol][newRow]) {
+          grid.changeColorOfNode(n, color(255, 204, 0));
+          //grid.nodes[newCol][newRow].changeColor(255, 204, 0);
+        }
+        
         neighbouringNodes.add(n);
       }
+      //change color of currentNode to "visited"
+      grid.changeColorOfNode(currentNode, color(34, 255, 0));
       
       visited[currentNode.col][currentNode.row] = true;
       return neighbouringNodes;
@@ -196,7 +204,9 @@ class Team1 extends Team {
     //DS9 reference.
     public void moveAlongHome() {
       if (!pathHome.isEmpty()) {
-        moveTo(pathHome.poll().position);
+        Node n = pathHome.poll();
+        moveTo(n.position);
+        grid.changeColorOfNode(n, color(0, 34, 255));
       }
       else {
         homeBound = false;
