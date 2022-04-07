@@ -68,7 +68,6 @@ void displayTrees() {
   }
 }
 
-
 void gridDisplay() {
   strokeWeight(0.3);
 

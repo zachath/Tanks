@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Queue;
+
 class Team1 extends Team {
 
   Team1(int team_id, int tank_size, color c, 
@@ -6,7 +11,7 @@ class Team1 extends Team {
     PVector tank2_startpos, int tank2_id, CannonBall ball2) {
     super(team_id, tank_size, c, tank0_startpos, tank0_id, ball0, tank1_startpos, tank1_id, ball1, tank2_startpos, tank2_id, ball2);  
 
-    tanks[0] = new Tank(tank0_id, this, this.tank0_startpos, this.tank_size, ball0);
+    tanks[0] = new AgentTank(tank0_id, this, this.tank0_startpos, this.tank_size, ball0);
     tanks[1] = new Tank(tank1_id, this, this.tank1_startpos, this.tank_size, ball1);
     tanks[2] = new Tank(tank2_id, this, this.tank2_startpos, this.tank_size, ball2);
 
@@ -15,11 +20,223 @@ class Team1 extends Team {
   }
 
   public class AgentTank extends Tank {
+    boolean started;
+    Node currentNode;
+    
+    int currentCol, currentRow;
+    
+    boolean searching;
+    boolean homeBound;
+    
+    HashMap<Node, ArrayList<Node>> internalGraph = new HashMap<>();
+    Node homeNode;
+    LinkedList<Node> pathHome = new LinkedList<>();
+    
+    //Neighbouring nodes.
+    int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
+    int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
+    
+    boolean[][] visited = new boolean[grid.cols][grid.rows];
+    
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
+      started = false;
+      currentNode = grid.getNearestNode(startpos);
+      homeNode = currentNode;
+      visited[currentNode.col][currentNode.row] = true;
+      connectNodes(currentNode, getNeighbours(currentNode));
     }
     
     public void initialize() {
+    }
+    
+    //Random walk.
+    public void patrol() {
+      currentNode = grid.getNearestNode(getRealPosition());
+      ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
+      ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
+      
+      connectNodes(currentNode, neighbouringNodes);
+      
+      for (Node n : neighbouringNodes) {
+        if (lookForTanks(n)) {
+          return;
+        }
+        
+        if (!visited[n.col][n.row]) {
+          unvisitedNeighbours.add(n);
+        }
+      }
+      
+      println("Neighbours: " + neighbouringNodes.size());
+      println("Unvisited: " + unvisitedNeighbours.size());
+      
+      if (unvisitedNeighbours.size() == 0) {
+        Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+        moveTo(node.position);
+      }
+      else {
+        Node node = unvisitedNeighbours.get((int) random(unvisitedNeighbours.size()));
+        moveTo(node.position);
+      }
+    }
+    
+    public void connectNodes(Node current, ArrayList<Node> nodes) {
+      if (internalGraph.containsKey(current)) {
+        internalGraph.get(current).addAll(nodes);
+      }
+      else {
+        internalGraph.put(current, nodes);
+      }
+      
+      for (Node node : nodes) {
+        if (internalGraph.containsKey(node) && !internalGraph.get(node).contains(current)) {
+          internalGraph.get(node).add(current);
+        }
+      else {
+          ArrayList<Node> tmp = new ArrayList<>();
+          tmp.add(current);
+          internalGraph.put(node, tmp);
+        }
+      }
+    }
+    
+    public ArrayList<Node> getNeighbours(Node current) {
+      ArrayList<Node> neighbouringNodes = new ArrayList<>();
+      
+      for (int i = 0; i < col_directions.length; i++) {
+        int newCol = currentNode.col + col_directions[i];
+        int newRow = currentNode.row + row_directions[i];
+        
+        //Skip out of bounds.
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
+           continue;
+        }
+        
+        Node n = grid.nodes[newCol][newRow];
+        
+        //Change color of neighbor node to "seen" if it hasn't been visited
+        if(!visited[newCol][newRow]) {
+          grid.changeColorOfNode(n, color(255, 204, 0));
+          //grid.nodes[newCol][newRow].changeColor(255, 204, 0);
+        }
+        
+        neighbouringNodes.add(n);
+      }
+      //change color of currentNode to "visited"
+      grid.changeColorOfNode(currentNode, color(34, 255, 0));
+      
+      visited[currentNode.col][currentNode.row] = true;
+      return neighbouringNodes;
+    }
+    
+    public boolean lookForTanks(Node n) {
+      if (n.content() instanceof Tank) {
+          Tank other = (Tank) n.content();
+          
+          if (other.team.id != this.team.id) {
+            println("Found enemy tank, stoping search.");
+            searching = false;
+            homeBound = true;
+            findShortestPathHome();
+          }
+        }
+        
+        return !searching;
+    }
+    
+    //BFS
+    public void findShortestPathHome() {
+      Node start = grid.getNearestNode(getRealPosition());
+      LinkedList<Node> visited = new LinkedList<>();
+      
+      if (start.equals(homeNode)) {
+        visited.add(start);
+        pathHome = visited;
+        return;
+      }
+      
+      Queue<Node> queue = new LinkedList<>();
+      queue.add(start);
+      
+      while(!queue.isEmpty()) {
+        Node current = queue.poll();
+        
+        if (visited.contains(current)) {
+          continue;
+        }
+        
+        visited.add(current);
+        
+        for (Node n : internalGraph.get(current)) {
+          if (n.equals(homeNode)) {
+            visited.add(n);
+            queue.clear();
+            break;
+          }
+          queue.add(n);
+        }
+      }
+      
+      pathHome = trim(visited);
+      println("Done with pathing");
+      return;
+    }
+    
+    public LinkedList<Node> trim(LinkedList<Node> list) {
+      for(int i = list.size() - 1; i > 0; i--) {
+            if(i > 2 && nodeIsNotPartOfShortestPath(list.get(i), list.get(i - 1), list.get(i - 2)))  {
+                list.set(i - 1, list.get(i));
+                list.remove(i);
+            }
+        }
+        if (list.size() < 2) {
+          list.clear();
+        }
+        for(Node n : list) {
+          grid.changeColorOfNode(n, color(0, 34, 255));
+        }
+        return list;
+    }
+    
+    private boolean nodeIsNotPartOfShortestPath(Node currentNode, Node nextNode, Node nextNextNode) {
+        return !internalGraph.get(currentNode).contains(nextNode) || internalGraph.get(nextNextNode).contains(currentNode);
+    }
+    
+    //DS9 reference.
+    public void moveAlongHome() {
+      if (!pathHome.isEmpty()) {
+        moveTo(pathHome.poll().position);
+      }
+      else {
+        homeBound = false;
+        println("Should be home.");
+      }
+    }
+    
+    public void message_collision(Tank other) {
+      if (other.team.id != this.team.id) {
+        println("Found enemy tank, stopping search.");
+        searching = false;
+      }
+    }
+    
+    public void updateLogic() {
+      if (!started) {
+        started = true;
+        searching = true;
+        patrol();
+      }
+
+      if (!this.userControlled) {
+
+        if (this.idle_state && searching) {
+          patrol();
+        }
+        else if (this.idle_state && homeBound) {
+          moveAlongHome();
+        }
+      }
     }
   }
 

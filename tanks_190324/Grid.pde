@@ -12,6 +12,10 @@ class Grid {
 
     createGrgetId();
   }
+  //***************************************************  
+  void changeColorOfNode(Node n, color c) {
+    nodes[n.col][n.row].setColor(c);
+  }
 
   //***************************************************  
   void createGrgetId() {
@@ -37,9 +41,11 @@ class Grid {
   }
 
   //***************************************************  
+  //Ändrad till att använda nodens färg
   void display() {
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
+        fill(nodes[i][j].c);
         // Initialize each object
         ellipse(nodes[i][j].position.x, nodes[i][j].position.y, 5.0, 5.0);
         //println("nodes[i][j].position.x: " + nodes[i][j].position.x);

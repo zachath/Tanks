@@ -58,7 +58,7 @@ int wait = 3000; //wait 3 sec (reload)
 boolean tick;
 
 Timer timer;
-int startTime = 10; //minutes 
+int startTime = 15; //minutes 
 int remainingTime;
 
 void setup(){
@@ -91,7 +91,7 @@ void setup(){
   }
   
   // Team0
-  team0_tank0_startpos = new PVector(50, 50);
+  team0_tank0_startpos = new PVector(width-150, height-350);
   team0_tank1_startpos = new PVector(50, 150);
   team0_tank2_startpos = new PVector(50, 250);
 
@@ -119,6 +119,10 @@ void setup(){
   allTanks[3] = teams[1].tanks[0];
   allTanks[4] = teams[1].tanks[1];
   allTanks[5] = teams[1].tanks[2];
+  
+  for (Tank tank : allTanks) {
+    grid.addContent(tank);
+  }
   
   loadShots();
   userControl = false;
