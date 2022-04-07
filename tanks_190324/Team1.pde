@@ -41,10 +41,45 @@ class Team1 extends Team {
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
+      
+      //startposition = homenode
       currentNode = grid.getNearestNode(startpos);
       homeNode = currentNode;
       visited[currentNode.col][currentNode.row] = true;
       connectNodes(currentNode, getNeighbours(currentNode));
+      
+      //Lägg till alla hembasnoder till "minnet"
+      for(Node[] nArr : grid.nodes) {
+        for(Node n : nArr) {
+          if(isHomeNode(n)) {
+            markVisit(n);
+            connectNodes(n, getNeighbours(n));
+          }
+        }
+      }
+    }
+    
+    void moveTo(PVector coord) {
+    if (!isImmobilized) {
+      this.idle_state = false;
+      this.isMoving = true;
+      this.stop_state = false;
+
+      this.targetPosition.set(coord);
+      this.hasTarget = true;
+      println("Connecting...");
+      Node n = grid.getNearestNode(coord);
+      connectNodes(n, getNeighbours(n)); 
+    }
+  }
+    
+    public void markVisit(Node n) {
+      visited[n.col][n.row] = true;
+      grid.changeColorOfNode(n, color(34, 255, 0));
+    }
+    
+    public void markSeen(Node n) {
+      grid.changeColorOfNode(n, color(255, 204, 0));
     }
     
     public void initialize() {
@@ -114,19 +149,15 @@ class Team1 extends Team {
         }
         
         Node n = grid.nodes[newCol][newRow];
-        
-        //Change color of neighbor node to "seen" if it hasn't been visited
+
         if(!visited[newCol][newRow]) {
-          grid.changeColorOfNode(n, color(255, 204, 0));
-          //grid.nodes[newCol][newRow].changeColor(255, 204, 0);
+          markSeen(n);
         }
         
         neighbouringNodes.add(n);
       }
-      //change color of currentNode to "visited"
-      grid.changeColorOfNode(currentNode, color(34, 255, 0));
       
-      visited[currentNode.col][currentNode.row] = true;
+      markVisit(currentNode);
       return neighbouringNodes;
     }
     
@@ -144,6 +175,7 @@ class Team1 extends Team {
         
         return !searching;
     }
+   
     
     //BFS
     public void findShortestPathHome() {
@@ -169,7 +201,7 @@ class Team1 extends Team {
         visited.add(current);
         
         for (Node n : internalGraph.get(current)) {
-          if (n.equals(homeNode)) {
+          if (isHomeNode(n)) {
             visited.add(n);
             queue.clear();
             break;
@@ -181,6 +213,13 @@ class Team1 extends Team {
       pathHome = trim(visited);
       println("Done with pathing");
       return;
+    }
+    
+    public boolean isHomeNode(Node n) {
+      return n.position.x > team.homebase_x && 
+      n.position.x < team.homebase_x+team.homebase_width &&
+      n.position.y > team.homebase_y &&
+      n.position.y < team.homebase_y+team.homebase_height;
     }
     
     public LinkedList<Node> trim(LinkedList<Node> list) {
@@ -195,6 +234,7 @@ class Team1 extends Team {
         }
         for(Node n : list) {
           grid.changeColorOfNode(n, color(0, 34, 255));
+          print("(" + n.col + ", " + n.row + ")");
         }
         return list;
     }
