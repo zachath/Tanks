@@ -141,16 +141,10 @@ class Team1 extends Team {
           }
         }
       else {
-        println("yo");
           ArrayList<Node> tmp = new ArrayList<>();
           tmp.add(current);
           internalGraph.put(node, tmp);
         }
-        print("(" + node.position.x + ", " + node.position.y + ")" + " neighbors: ");
-        for(Node n : internalGraph.get(node)) {
-          print("(" + n.position.x + ", " + n.position.y + ")");
-        }
-        println();
       }
       
     }
@@ -165,7 +159,6 @@ class Team1 extends Team {
     }
     
     public ArrayList<Node> getNeighbours(Node current) {
-      println("Currently at: " + "(" + current.position.x + ", " + current.position.y + ")");
       ArrayList<Node> neighbouringNodes = new ArrayList<>();
       
       for (int i = 0; i < col_directions.length; i++) {
@@ -222,7 +215,6 @@ class Team1 extends Team {
       
       while(!queue.isEmpty()) {
         Node current = queue.poll();
-        grid.changeColorOfNode(current, color(255,0,247));
         
         if (visited.contains(current)) {
           continue;
@@ -230,7 +222,7 @@ class Team1 extends Team {
         
         visited.add(current);
         for (Node n : internalGraph.get(current)) {
-          if (n == homeNode) {
+          if (n == homeNode || isHomeNode(n)) {
             visited.add(n);
             queue.clear();
             println("FOund home");
