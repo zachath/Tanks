@@ -48,7 +48,12 @@ class Team1 extends Team {
       visited[currentNode.col][currentNode.row] = true;
       connectNodes(currentNode, getNeighbours(currentNode));
       
-      //Lägg till alla hembasnoder till "minnet"
+      connectHomeBaseNodes();
+      
+    }
+    
+    //Lägg till alla hembasnoder till "minnet"
+    void connectHomeBaseNodes() {
       for(Node[] nArr : grid.nodes) {
         for(Node n : nArr) {
           if(isHomeNode(n)) {
@@ -67,7 +72,8 @@ class Team1 extends Team {
 
       this.targetPosition.set(coord);
       this.hasTarget = true;
-      println("Connecting...");
+    }
+    if(userControlled) {
       Node n = grid.getNearestNode(coord);
       connectNodes(n, getNeighbours(n)); 
     }
@@ -118,30 +124,53 @@ class Team1 extends Team {
     
     public void connectNodes(Node current, ArrayList<Node> nodes) {
       if (internalGraph.containsKey(current)) {
-        internalGraph.get(current).addAll(nodes);
+        for(Node n : nodes) {
+          if(!contains(internalGraph.get(current), n)) {
+            internalGraph.get(current).add(n);
+          }
+        }
       }
       else {
         internalGraph.put(current, nodes);
       }
       
       for (Node node : nodes) {
-        if (internalGraph.containsKey(node) && !internalGraph.get(node).contains(current)) {
-          internalGraph.get(node).add(current);
+        if (internalGraph.containsKey(node)) {
+          if(!contains(internalGraph.get(node), current)) {
+            internalGraph.get(node).add(current);
+          }
         }
       else {
+        println("yo");
           ArrayList<Node> tmp = new ArrayList<>();
           tmp.add(current);
           internalGraph.put(node, tmp);
         }
+        print("(" + node.position.x + ", " + node.position.y + ")" + " neighbors: ");
+        for(Node n : internalGraph.get(node)) {
+          print("(" + n.position.x + ", " + n.position.y + ")");
+        }
+        println();
       }
+      
+    }
+    
+    boolean contains(ArrayList<Node> list, Node target) {
+      for(Node n : list) {
+        if(n == target) {
+          return true;
+        }
+      }
+      return false;
     }
     
     public ArrayList<Node> getNeighbours(Node current) {
+      println("Currently at: " + "(" + current.position.x + ", " + current.position.y + ")");
       ArrayList<Node> neighbouringNodes = new ArrayList<>();
       
       for (int i = 0; i < col_directions.length; i++) {
-        int newCol = currentNode.col + col_directions[i];
-        int newRow = currentNode.row + row_directions[i];
+        int newCol = current.col + col_directions[i];
+        int newRow = current.row + row_directions[i];
         
         //Skip out of bounds.
         if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
@@ -157,7 +186,7 @@ class Team1 extends Team {
         neighbouringNodes.add(n);
       }
       
-      markVisit(currentNode);
+      markVisit(current);
       return neighbouringNodes;
     }
     
@@ -193,25 +222,28 @@ class Team1 extends Team {
       
       while(!queue.isEmpty()) {
         Node current = queue.poll();
+        grid.changeColorOfNode(current, color(255,0,247));
         
         if (visited.contains(current)) {
           continue;
         }
         
         visited.add(current);
-        
         for (Node n : internalGraph.get(current)) {
-          if (isHomeNode(n)) {
+          if (n == homeNode) {
             visited.add(n);
             queue.clear();
+            println("FOund home");
             break;
           }
           queue.add(n);
         }
       }
       
+      
       pathHome = trim(visited);
       println("Done with pathing");
+      println("Queue size: " + queue.size());
       return;
     }
     
@@ -234,8 +266,11 @@ class Team1 extends Team {
         }
         for(Node n : list) {
           grid.changeColorOfNode(n, color(0, 34, 255));
-          print("(" + n.col + ", " + n.row + ")");
+          print("(" + n.position.x + ", " + n.position.y + ")");
         }
+        println();
+        grid.changeColorOfNode(list.getLast(), color(255,17,0));
+        println("path length: " + list.size());
         return list;
     }
     
