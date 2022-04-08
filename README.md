@@ -11,7 +11,7 @@
 - Tanken kan se andra tanks i närliggande noder (Alla riktningar),
 - Tanken vill hellre gå till en nod den inte varit i förr,
 - Tanken kan gå i alla riktningar (även diagonalt),
-- Tanken patrulerar slumpmässigt tills den hittar en fiende tank,
+- Tanken patrullerar slumpmässigt tills den hittar en fiende tank,
 - Därefter tar den sig efter den väg den räknat ut med BFS, baserat på där den tidigare varit
 
 ### Brister:
@@ -23,11 +23,11 @@
 
 ### Testning:
 Eftersom vi inte använder oss av några separata bibliotek så borde det gå att köra som det kommer.
-För att testa programmet kan man antigen låta Agent-Tanken gå slumpmässigt och vänta tills den har hittat
+För att testa programmet kan man antingen låta Agent-Tanken gå slumpmässigt och vänta tills den har hittat
 en fiende tank och låta den hitt hem. Om man inte har tid för det kan man ta över kontrollen med 'c' och 
 gå själv genom att klicka på noder, men var noga med att endast gå till de närliggande noderna. I debug som
 man kommer in i med 'd' så kan man se vilka noder tanken har besökt (grönt) och sett (gul), när den väl
-har planerat en väg tillbaka så kan man se den vägen (de blåa noderana) samt slutnoden (den röda).
+har planerat en väg tillbaka så kan man se den vägen (de blåa noderna) samt slutnoden (den röda).
 
 Github: [repo](https://github.com/zachath/Tanks).
 
