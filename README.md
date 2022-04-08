@@ -3,8 +3,8 @@
 
 ### Revideringar av programmet:
 - Team1.pde, vi har lagt till AgentTank  vilket är vår agent för att lösa problemet,
-- Node.pde & Grid.pde & gui_functions.pde, small modification to allow for the colouring of nodes the AgentTank interacts with,
-- tanks_190324.pde, the enemy tanks added as content in the grid to allow for detection by the AgentTank.
+- Node.pde & Grid.pde & gui_functions.pde, små modifikationer för att noderna som tanken agerar på kan färgläggas,
+- tanks_190324.pde, tanksen läggs till om content i grid så att de kan upptäckas genom att kolla på deras nod.
 
 ### Förutsättningar:
 - Tanken känner till sin hembas (Alla noder i basen är automatiskt besökta),
