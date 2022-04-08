@@ -1,3 +1,4 @@
+
 class SensorReading {
   float distance;
   float heading;

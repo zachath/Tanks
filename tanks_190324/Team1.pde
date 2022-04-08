@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -199,22 +201,32 @@ class Team1 extends Team {
     }
    
     
-    //BFS
+    //Söker igenom instansens internalGraph (graf över kända noder) med hjälp av breadth-first search för att hitta en väg från tankens nuvarande position till en nod i hembasen. 
     public void findShortestPathHome() {
-      Node start = grid.getNearestNode(getRealPosition());
-      LinkedList<Node> visited = new LinkedList<>();
+      Node start = grid.getNearestNode(getRealPosition()); 
+      LinkedList<Node> visited = new LinkedList<>(); //här lagras alla noder som algoritmen besöker
       
+      //Om startpunkten är samma som slutpunkten, avsluta
       if (start.equals(homeNode)) {
         visited.add(start);
         pathHome = visited;
         return;
       }
       
+      //FIFO queue används, i enlighet med Russell och Norvigs förslag
       Queue<Node> queue = new LinkedList<>();
       queue.add(start);
       
+      /*Så länge kön inte är tom, poll() första elementet i kön.
+        Om elementet är en hemnod, hemvägen är hittad.
+        Annars, gå igenom alla dess grannar och kolla om de är hemnoder. Om ja, hemvägen är hittad.*/
       while(!queue.isEmpty()) {
         Node current = queue.poll();
+        if(current == homeNode ||isHomeNode(current)) {
+          visited.add(current);
+          queue.clear();
+          break;
+        }
         
         if (visited.contains(current)) {
           continue;
@@ -232,7 +244,7 @@ class Team1 extends Team {
         }
       }
       
-      
+      //Trimma ner vägen till kortaste vägen
       pathHome = trim(visited);
       println("Done with pathing");
       println("Queue size: " + queue.size());

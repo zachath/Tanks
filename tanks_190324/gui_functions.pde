@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 // Initiera användargränssnittet.
 // Används inte.
 void setGUI() {

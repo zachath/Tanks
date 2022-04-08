@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 class Grid {
   int cols, rows;
   int grid_size;
