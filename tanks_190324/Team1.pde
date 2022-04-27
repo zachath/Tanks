@@ -38,8 +38,6 @@ class Team1 extends Team {
     int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
     int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
     
-    boolean[][] visited = new boolean[grid.cols][grid.rows];
-    
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
@@ -125,27 +123,27 @@ class Team1 extends Team {
     }
     
     public void connectNodes(Node current, ArrayList<Node> nodes) {
-      if (internalGraph.containsKey(current)) {
+      if (graph.containsKey(current)) {
         for(Node n : nodes) {
-          if(!contains(internalGraph.get(current), n)) {
-            internalGraph.get(current).add(n);
+          if(!contains(graph.get(current), n)) {
+            graph.get(current).add(n);
           }
         }
       }
       else {
-        internalGraph.put(current, nodes);
+        graph.put(current, nodes);
       }
       
       for (Node node : nodes) {
-        if (internalGraph.containsKey(node)) {
-          if(!contains(internalGraph.get(node), current)) {
-            internalGraph.get(node).add(current);
+        if (graph.containsKey(node)) {
+          if(!contains(graph.get(node), current)) {
+            graph.get(node).add(current);
           }
         }
       else {
           ArrayList<Node> tmp = new ArrayList<>();
           tmp.add(current);
-          internalGraph.put(node, tmp);
+          graph.put(node, tmp);
         }
       }
       
@@ -233,7 +231,7 @@ class Team1 extends Team {
         }
         
         visited.add(current);
-        for (Node n : internalGraph.get(current)) {
+        for (Node n : graph.get(current)) {
           if (n == homeNode || isHomeNode(n)) {
             visited.add(n);
             queue.clear();
@@ -279,7 +277,7 @@ class Team1 extends Team {
     }
     
     private boolean nodeIsNotPartOfShortestPath(Node currentNode, Node nextNode, Node nextNextNode) {
-        return !internalGraph.get(currentNode).contains(nextNode) || internalGraph.get(nextNextNode).contains(currentNode);
+        return !graph.get(currentNode).contains(nextNode) || graph.get(nextNextNode).contains(currentNode);
     }
     
     //DS9 reference.

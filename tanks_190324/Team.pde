@@ -15,6 +15,9 @@ class Team {
   color team_color;
 
   int numberOfHits; // sammalagda antalet bekräftade träffar på andra lagets tanks. 
+  
+  HashMap<Node, ArrayList<Node>> internalGraph = new HashMap<>();
+  boolean[][] visited = new boolean[grid.cols][grid.rows];
 
 
   Team (int team_id, int tank_size, color c, 
