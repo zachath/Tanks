@@ -123,27 +123,27 @@ class Team1 extends Team {
     }
     
     public void connectNodes(Node current, ArrayList<Node> nodes) {
-      if (graph.containsKey(current)) {
+      if (team.graph.containsKey(current)) {
         for(Node n : nodes) {
-          if(!contains(graph.get(current), n)) {
-            graph.get(current).add(n);
+          if(!contains(team.graph.get(current), n)) {
+            team.graph.get(current).add(n);
           }
         }
       }
       else {
-        graph.put(current, nodes);
+        team.graph.put(current, nodes);
       }
       
       for (Node node : nodes) {
         if (graph.containsKey(node)) {
-          if(!contains(graph.get(node), current)) {
-            graph.get(node).add(current);
+          if(!contains(team.graph.get(node), current)) {
+            team.graph.get(node).add(current);
           }
         }
       else {
           ArrayList<Node> tmp = new ArrayList<>();
           tmp.add(current);
-          graph.put(node, tmp);
+          team.graph.put(node, tmp);
         }
       }
       
