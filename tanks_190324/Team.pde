@@ -43,6 +43,15 @@ class Team {
     else if (this.id==1) {this.homebase_x = width - 151; this.homebase_y = height - 351;}
     
   }
+  
+  public void notifyTeam() {
+    for (Tank t : tanks) {
+      if (t instanceof AgentTank) {
+        AgentTank agent = (AgentTank) t;
+        agent.findHome();
+      }
+    }
+  }
 
   int getId() {
     return this.id;
