@@ -297,4 +297,31 @@ public class AgentTank extends Tank {
         }
       }
     }
+    
+    void displayInfo() {
+      fill(230);
+      rect(width - 151, 0, 150, 300);
+      strokeWeight(1);
+      fill(255, 0, 0);
+      stroke(255, 0, 0);
+      textSize(10);
+      text("id: "+this.id+"\n"+
+        "health: "+this.health+"\n"+
+        "position: ("+(int)this.position.x +","+(int)this.position.y+")"+"\n"+
+        "isMoving: "+this.isMoving+"\n"+
+        "isSpinning : "+this.isSpinning +"\n"+
+        "remaining_turns: "+this.remaining_turns +"\n"+
+        "isReady : "+this.isReady +"\n"+
+        "hasTarget : "+this.hasTarget +"\n"+
+        "stop_state : "+this.stop_state +"\n"+
+        "stop_turning_state : "+this.stop_turning_state +"\n"+
+        "idle_state : "+this.idle_state +"\n"+
+        "isDestroyed : "+this.isDestroyed +"\n"+
+        "isImmobilized : "+this.isImmobilized +"\n"+
+        "targetHeading : "+this.targetHeading +"\n"+
+        "DIRECTION : "+Compass.getDirection(this) +"\n"+
+        "headingInDegrees : "+getHeadingInDegrees() + "\n"+
+        "heading_saved: "+this.heading_saved +"\n"
+      , width - 145, 35 );
+  }
   }

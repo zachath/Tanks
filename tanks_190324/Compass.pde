@@ -18,39 +18,39 @@ static class Compass {
         }
     }
     
-    public Direction getDirection(Tank tank) {
+    public static Direction getDirection(Tank tank) {
       float tankHeading = tank.getHeadingInDegrees();
       
-      if(NORTH.min <= tankheading < NORTH.max) {
-        return NORTH;
+      if(Direction.NORTH.min <= tankHeading && tankHeading < Direction.NORTH.max) {
+        return Direction.NORTH;
       }
       
-      else if(NORTHEAST.min <= tankheading < NORTHEAST.max) {
-        return NORTHEAST;
+      else if(Direction.NORTHEAST.min <= tankHeading && tankHeading < Direction.NORTHEAST.max) {
+        return Direction.NORTHEAST;
       }
       
-      else if(NORTHWEST.min <= tankheading < NORTHWEST.max) {
-        return NORTHWEST;
+      else if(Direction.NORTHWEST.min <= tankHeading && tankHeading < Direction.NORTHWEST.max) {
+        return Direction.NORTHWEST;
       }
       
-      else if(EAST.min <= tankheading < EAST.max) {
-        return EAST;
+      else if(Direction.EAST.min <= tankHeading && tankHeading < Direction.EAST.max) {
+        return Direction.EAST;
       }
       
-      else if(SOUTHEAST.min <= tankheading < SOUTHEAST.max) {
-        return SOUTHEAST;
+      else if(Direction.SOUTHEAST.min <= tankHeading && tankHeading < Direction.SOUTHEAST.max) {
+        return Direction.SOUTHEAST;
       }
       
-      else if(SOUTH.min <= tankheading < SOUTH.max) {
-        return SOUTH;
+      else if(Direction.SOUTH.min <= tankHeading && tankHeading < Direction.SOUTH.max) {
+        return Direction.SOUTH;
       }
       
-      else if(SOUTHWEST.min <= tankheading < SOUTHWEST.max) {
-        return SOUTHWEST;
+      else if(Direction.SOUTHWEST.min <= tankHeading && tankHeading < Direction.SOUTHWEST.max) {
+        return Direction.SOUTHWEST;
       }
       
-      else if(WEST.min <= tankheading < WEST.max) {
-        return WEST;
+      else {
+        return Direction.WEST;
       }
     }
 }
