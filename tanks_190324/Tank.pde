@@ -1088,6 +1088,7 @@ class Tank extends Sprite { //<>//
       "isImmobilized : "+this.isImmobilized +"\n"+
       "targetHeading : "+this.targetHeading +"\n"+
       "heading : "+this.heading +"\n"+
+      "headingInDegrees : "+getHeadingInDegrees() + "\n"+
       "heading_saved: "+this.heading_saved +"\n"
       , width - 145, 35 );
   }
