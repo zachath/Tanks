@@ -73,14 +73,16 @@ public class AgentTank extends Tank {
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
       
-      float test = 1;
+      float test = 0;
       println(String.format("Heading: %s", test));
       for (int i = 0; i < 8; i++) {
-        
         LOS();
-        test += 22.5f;
+        test += 45f;
         println(String.format("Rotating to: %s", test));
         rotateTo(radians(test));
+        if (test >= 180) {
+          test = -180;
+        }
       }
       
       
