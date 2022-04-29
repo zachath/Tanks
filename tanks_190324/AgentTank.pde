@@ -63,6 +63,7 @@ public class AgentTank extends Tank {
     
     public void markSeen(Node n) {
       grid.changeColorOfNode(n, color(255, 204, 0));
+      n.seen = true;
     }
     
     public void initialize() {
@@ -71,7 +72,17 @@ public class AgentTank extends Tank {
     //Random walk.
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
-      ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
+      
+      float test = heading;
+      println(String.format("Heading: %s", test));
+      for (int i = 0; i < 8; i++) {
+        LOS();
+        test -= 22.5f;
+        println(String.format("Rotating to: %s", test));
+        rotateTo(radians(test));
+      }
+      
+      /*ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
       
       connectNodes(currentNode, neighbouringNodes);
@@ -96,9 +107,10 @@ public class AgentTank extends Tank {
       else {
         Node node = unvisitedNeighbours.get((int) random(unvisitedNeighbours.size()));
         moveTo(node.position);
-      }
-      
-      LOS();
+      }*/
+    }
+    
+    public void rotateAgent() {
     }
     
     private final static int LOS_LENGTH = 5;
@@ -119,7 +131,20 @@ public class AgentTank extends Tank {
         Node seenNode = grid.nodes[newCol][newRow];
         if (!team.visited[seenNode.col][seenNode.row]) {
           markSeen(seenNode);
+          checkNeighbours(seenNode);
         }
+        lookForTanks(seenNode);
+      }
+    }
+    
+    public void connectNodes(Node n1, Node n2) {
+      if (team.graph.containsKey(n1)) {
+        team.graph.get(n1).add(n2);
+      }
+      else {
+        ArrayList<Node> tmp = new ArrayList();
+        tmp.add(n2);
+        team.graph.put(n1, tmp);
       }
     }
     
@@ -157,6 +182,25 @@ public class AgentTank extends Tank {
         }
       }
       return false;
+    }
+    
+    public void checkNeighbours(Node current) {
+      for (int i = 0; i < col_directions.length; i++) {
+        int newCol = current.col + col_directions[i];
+        int newRow = current.row + row_directions[i];
+        
+        //Skip out of bounds.
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
+           continue;
+        }
+        
+        Node n = grid.nodes[newCol][newRow];
+
+        if (n.seen) {
+          connectNodes(current, n);
+          connectNodes(n, current);
+        }
+      }
     }
     
     public ArrayList<Node> getNeighbours(Node current) {
