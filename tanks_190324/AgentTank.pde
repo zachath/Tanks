@@ -97,6 +97,30 @@ public class AgentTank extends Tank {
         Node node = unvisitedNeighbours.get((int) random(unvisitedNeighbours.size()));
         moveTo(node.position);
       }
+      
+      LOS();
+    }
+    
+    private final static int LOS_LENGTH = 5;
+    public void LOS() {
+      Direction tankDirection = Compass.getDirection(this);
+      int newCol = currentNode.col;
+      int newRow = currentNode.row;
+      
+      for (int i = 0; i < LOS_LENGTH; i++) {
+        newCol += tankDirection.colStep;
+        newRow += tankDirection.rowStep;
+        
+        //Skip out of bounds.
+        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
+           continue;
+        }
+        
+        Node seenNode = grid.nodes[newCol][newRow];
+        if (!team.visited[seenNode.col][seenNode.row]) {
+          markSeen(seenNode);
+        }
+      }
     }
     
     public void connectNodes(Node current, ArrayList<Node> nodes) {

@@ -1,22 +1,5 @@
 static class Compass {
-    enum Direction {
-        NORTH(-112.5f, -67.5f),
-        NORTHEAST(-67.5f, -22.5f),
-        NORTHWEST(-157.5f, -112.5f),
-        EAST(-22.5f, 22.5f),
-        SOUTHEAST(22.5f, 67.5f),
-        SOUTH(67.5f, 112.5f),
-        SOUTHWEST(112.5f, 157.5f),
-        WEST(157.5f, -157.5f);
-        
-        public final float min;
-        public final float max;
-
-        private Direction(float min, float max) {
-            this.min = min;
-            this.max = max;
-        }
-    }
+    
     
     public static Direction getDirection(Tank tank) {
       float tankHeading = tank.getHeadingInDegrees();
@@ -54,3 +37,26 @@ static class Compass {
       }
     }
 }
+
+enum Direction {
+        NORTH(-112.5f, -67.5f, 0, -1),
+        NORTHEAST(-67.5f, -22.5f, 1, -1),
+        NORTHWEST(-157.5f, -112.5f, -1, -1),
+        EAST(-22.5f, 22.5f, 1, 0),
+        SOUTHEAST(22.5f, 67.5f, 1, 1),
+        SOUTH(67.5f, 112.5f, 0, 1),
+        SOUTHWEST(112.5f, 157.5f, -1, 1),
+        WEST(157.5f, -157.5f, -1, 0);
+        
+        public final float min;
+        public final float max;
+        public final int colStep;
+        public final int rowStep;
+
+        private Direction(float min, float max, int colStep, int rowStep) {
+            this.min = min;
+            this.max = max;
+            this.colStep = colStep;
+            this.rowStep = rowStep;
+        }
+    }
