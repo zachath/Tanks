@@ -73,14 +73,17 @@ public class AgentTank extends Tank {
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
       
-      float test = heading;
+      float test = 1;
       println(String.format("Heading: %s", test));
       for (int i = 0; i < 8; i++) {
+        
         LOS();
-        test -= 22.5f;
+        test += 22.5f;
         println(String.format("Rotating to: %s", test));
         rotateTo(radians(test));
       }
+      
+      
       
       /*ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
@@ -120,6 +123,7 @@ public class AgentTank extends Tank {
       int newRow = currentNode.row;
       
       for (int i = 0; i < LOS_LENGTH; i++) {
+        println(String.format("Direction: %s, Iteration: %d", tankDirection.name, i));
         newCol += tankDirection.colStep;
         newRow += tankDirection.rowStep;
         

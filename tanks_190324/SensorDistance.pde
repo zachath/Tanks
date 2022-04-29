@@ -109,7 +109,7 @@ class SensorDistance extends Sensor{
 
   
   //******************************************************
-  // Returnera avståndet till kanten i tankens riktning. //<>//
+  // Returnera avståndet till kanten i tankens riktning. //<>// //<>//
   public SensorReading readValue(){
     
     PVector v11, v12, v21, v22, h11, h12, h21, h22;

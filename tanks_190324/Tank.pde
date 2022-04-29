@@ -1,4 +1,4 @@
-class Tank extends Sprite { //<>//
+class Tank extends Sprite { //<>// //<>//
   int id;
   //String name; //Sprite
   int team_id;

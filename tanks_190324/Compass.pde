@@ -39,24 +39,26 @@ static class Compass {
 }
 
 enum Direction {
-        NORTH(-112.5f, -67.5f, 0, -1),
-        NORTHEAST(-67.5f, -22.5f, 1, -1),
-        NORTHWEST(-157.5f, -112.5f, -1, -1),
-        EAST(-22.5f, 22.5f, 1, 0),
-        SOUTHEAST(22.5f, 67.5f, 1, 1),
-        SOUTH(67.5f, 112.5f, 0, 1),
-        SOUTHWEST(112.5f, 157.5f, -1, 1),
-        WEST(157.5f, -157.5f, -1, 0);
+        NORTH(-112.5f, -67.5f, 0, -1, "North"),
+        NORTHEAST(-67.5f, -22.5f, 1, -1, "Northeast"),
+        NORTHWEST(-157.5f, -112.5f, -1, -1, "Northwest"),
+        EAST(-22.5f, 22.5f, 1, 0, "East"),
+        SOUTHEAST(22.5f, 67.5f, 1, 1, "Southeast"),
+        SOUTH(67.5f, 112.5f, 0, 1, "South"),
+        SOUTHWEST(112.5f, 157.5f, -1, 1, "Southwest"),
+        WEST(157.5f, -157.5f, -1, 0, "West");
         
         public final float min;
         public final float max;
         public final int colStep;
         public final int rowStep;
+        public final String name;
 
-        private Direction(float min, float max, int colStep, int rowStep) {
+        private Direction(float min, float max, int colStep, int rowStep, String name) {
             this.min = min;
             this.max = max;
             this.colStep = colStep;
             this.rowStep = rowStep;
+            this.name = name;
         }
     }
