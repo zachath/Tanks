@@ -79,24 +79,16 @@ public class AgentTank extends Tank {
         LOS();
         test += 45f;
         println(String.format("Rotating to: %s", test));
-        rotateTo(radians(test));
+        //rotateTo(radians(test));
         if (test >= 180) {
           test = -180;
         }
       }
       
-      
-      
-      /*ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
+      ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
       
-      connectNodes(currentNode, neighbouringNodes);
-      
       for (Node n : neighbouringNodes) {
-        if (lookForTanks(n)) {
-          return;
-        }
-        
         if (!team.visited[n.col][n.row]) {
           unvisitedNeighbours.add(n);
         }
@@ -105,17 +97,17 @@ public class AgentTank extends Tank {
       println("Neighbours: " + neighbouringNodes.size());
       println("Unvisited: " + unvisitedNeighbours.size());
       
+      println(String.format("Currently at: %d : %d", currentNode.col, currentNode.row));
       if (unvisitedNeighbours.size() == 0) {
         Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
+        println(String.format("Going to: %d : %d", node.col, node.row));
         moveTo(node.position);
       }
       else {
         Node node = unvisitedNeighbours.get((int) random(unvisitedNeighbours.size()));
+        println(String.format("Going to: %d : %d", node.col, node.row));
         moveTo(node.position);
-      }*/
-    }
-    
-    public void rotateAgent() {
+      }
     }
     
     private final static int LOS_LENGTH = 5;
@@ -225,6 +217,7 @@ public class AgentTank extends Tank {
 
         if(!team.visited[newCol][newRow]) {
           markSeen(n);
+          lookForTanks(n);
         }
         
         neighbouringNodes.add(n);
@@ -364,6 +357,7 @@ public class AgentTank extends Tank {
       if (!this.userControlled) {
 
         if (this.idle_state && searching) {
+          print("Idle and searching");
           patrol();
         }
         else if (this.idle_state && homeBound) {
