@@ -37,7 +37,7 @@ color team1Color = color(0, 150, 200);
 
 CannonBall[] allShots = new CannonBall[6];
 
-Tree[] allTrees = new Tree[3];
+Tree[] allTrees = new Tree[0];
 
 Tank[] allTanks = new Tank[6];
 
@@ -83,9 +83,9 @@ void setup(){
   
   
   // Skapa alla träd
-  allTrees[0] = new Tree(230, 600);
-  allTrees[1] = new Tree(280,230);//280,230(300,300)
-  allTrees[2] = new Tree(530, 520);//530, 520(500,500);
+  //allTrees[0] = new Tree(230, 600);
+  //allTrees[1] = new Tree(280,230);//280,230(300,300)
+  //allTrees[2] = new Tree(530, 520);//530, 520(500,500);
 
   // Skapa alla skott
   for (int i = 0; i < allShots.length; i++) {

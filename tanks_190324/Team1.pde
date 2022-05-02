@@ -15,7 +15,7 @@ class Team1 extends Team {
 
     tanks[0] = new AgentTank(tank0_id, this, this.tank0_startpos, this.tank_size, ball0);
     tanks[1] = new AgentTank(tank1_id, this, this.tank1_startpos, this.tank_size, ball1);
-    tanks[2] = new Tank(tank2_id, this, this.tank2_startpos, this.tank_size, ball2);
+    tanks[2] = new AgentTank(tank2_id, this, this.tank2_startpos, this.tank_size, ball2);
 
     //this.homebase_x = 0;
     //this.homebase_y = 0;
