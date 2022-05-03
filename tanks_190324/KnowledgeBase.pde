@@ -1,4 +1,4 @@
-class Graph {
+class KnowledgeBase {
   HashMap<Node, ArrayList<Node>> graph = new HashMap<>();
   boolean[][] visited = new boolean[grid.cols][grid.rows];
   boolean[][] seen = new boolean[grid.cols][grid.rows];
@@ -8,7 +8,7 @@ class Graph {
   
   Team team;
   
-  public Graph(Team team) {
+  public KnowledgeBase(Team team) {
     this.team = team;
     
     connectHomeBaseNodes();

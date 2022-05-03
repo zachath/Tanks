@@ -12,7 +12,7 @@ class CommunicationHandler {
   public void update() {
     if(connectionUp) {
       if(!teamIsUpToDate) {
-        //mergeKnowledge();
+        mergeKnowledge();
       }
       
       for (Tank t : team.tanks) {
@@ -30,24 +30,28 @@ class CommunicationHandler {
   public void turnOff() {
     connectionUp = false;
     teamIsUpToDate = false;
-    
-    for (Tank t : team.tanks) {
-      if (t instanceof AgentTank) {
-        AgentTank agent = (AgentTank) t;
-        agent.communicationPossible = false;
-      }
-    }
   }
   
-  public boolean connectionIsDown() {
+  public boolean connectionIsUp() {
     return connectionUp;
   }
   
   private void updateKnowledge(AgentTank agent) {
-    agent.internalGraph.graph = new HashMap<Node, ArrayList<Node>>(team.graph.graph);
-    agent.internalGraph.visited = (boolean[][]) team.graph.visited.clone();
-    agent.internalGraph.seen = (boolean[][]) team.graph.seen.clone();
+    agent.internalKnowledge.graph = new HashMap<Node, ArrayList<Node>>(team.knowledgeBase.graph);
+    agent.internalKnowledge.visited = (boolean[][]) team.knowledgeBase.visited.clone();
+    agent.internalKnowledge.seen = (boolean[][]) team.knowledgeBase.seen.clone();
   }
  
-  
+  private void mergeKnowledge() {
+    println("merging...");
+    for(Tank t : team.tanks) {
+      if (t instanceof AgentTank) {
+         //AgentTank agent = (AgentTank) t;   
+         //team.graph.mergeGraph(agent.internalGraph.graph);
+         //team.graph.mergeVisited(agent.internalGraph.visited);
+         //team.graph.mergeSeen(agent.internalGraph.seen);
+       }
+    }
+    teamIsUpToDate = true;
+  }
 }

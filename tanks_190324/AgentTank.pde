@@ -6,20 +6,18 @@ public class AgentTank extends Tank {
     
     boolean searching;
     boolean homeBound;
-    boolean communicationPossible;
     
-    Graph internalGraph;
+    KnowledgeBase internalKnowledge;
     LinkedList<Node> pathHome = new LinkedList<>();
     
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
-      internalGraph = new Graph(team);
-      communicationPossible = true;
+      internalKnowledge = new KnowledgeBase(team);
    
       Node currentNode = grid.getNearestNode(startpos);
-      team.graph.markVisit(currentNode);
-      team.graph.connectNodes(currentNode, team.graph.getNeighbours(currentNode));
+      team.knowledgeBase.markVisit(currentNode);
+      team.knowledgeBase.connectNodes(currentNode, team.knowledgeBase.getNeighbours(currentNode));
     }
     
     void moveTo(PVector coord) {
@@ -35,11 +33,11 @@ public class AgentTank extends Tank {
     if(userControlled) {
       Node n = grid.getNearestNode(coord);
       LOS();
-      if(communicationPossible) {
-        team.graph.connectNodes(n, team.graph.getNeighbours(n));
+      if(team.communicationHandler.connectionIsUp()) {
+        team.knowledgeBase.connectNodes(n, team.knowledgeBase.getNeighbours(n));
       }
       else {
-        internalGraph.connectNodes(n, internalGraph.getNeighbours(n));
+        internalKnowledge.connectNodes(n, internalKnowledge.getNeighbours(n));
       }
     }
   }
@@ -54,11 +52,11 @@ public class AgentTank extends Tank {
       LOS();
       
       ArrayList<Node> neighbouringNodes;
-      if(communicationPossible) {
-        neighbouringNodes = team.graph.getNeighbours(currentNode);
+      if(team.communicationHandler.connectionIsUp()) {
+        neighbouringNodes = team.knowledgeBase.getNeighbours(currentNode);
       }
       else {
-        neighbouringNodes = internalGraph.getNeighbours(currentNode);
+        neighbouringNodes = internalKnowledge.getNeighbours(currentNode);
       }
       
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
@@ -69,14 +67,14 @@ public class AgentTank extends Tank {
           return;
         }
         
-        if(communicationPossible) {
-          if (!team.graph.visited[n.col][n.row]) {
+        if(team.communicationHandler.connectionIsUp()) {
+          if (!team.knowledgeBase.visited[n.col][n.row]) {
             unvisitedNeighbours.add(n);
           }
         }
         
         else {
-          if (!internalGraph.visited[n.col][n.row]) {
+          if (!internalKnowledge.visited[n.col][n.row]) {
             unvisitedNeighbours.add(n);
           }
         }
@@ -116,12 +114,12 @@ public class AgentTank extends Tank {
         
         Node seenNode = grid.nodes[newCol][newRow];
         
-        Graph tmp;
-        if(communicationPossible) {
-          tmp = team.graph;
+        KnowledgeBase tmp;
+        if(team.communicationHandler.connectionIsUp()) {
+          tmp = team.knowledgeBase;
         }
         else {
-          tmp = internalGraph;
+          tmp = internalKnowledge;
         }
         
         if (!tmp.visited[seenNode.col][seenNode.row]) {
@@ -140,7 +138,7 @@ public class AgentTank extends Tank {
           if (other.team.id != this.team.id) {
             println("Found enemy tank, stoping search.");
             
-            if (communicationPossible) {
+            if (team.communicationHandler.connectionIsUp()) {
               println("notifiying!");
               team.notifyTeam();
             }
@@ -155,11 +153,11 @@ public class AgentTank extends Tank {
       println(id + ": findHome");
       searching = false;
       homeBound = true;
-      if(communicationPossible) {
-        pathHome = team.graph.findPathHome(grid.getNearestNode(getRealPosition()));
+      if(team.communicationHandler.connectionIsUp()) {
+        pathHome = team.knowledgeBase.findPathHome(grid.getNearestNode(getRealPosition()));
       }
       else {
-        pathHome = internalGraph.findPathHome(grid.getNearestNode(getRealPosition()));
+        pathHome = internalKnowledge.findPathHome(grid.getNearestNode(getRealPosition()));
       }
     }
     
@@ -210,9 +208,9 @@ public class AgentTank extends Tank {
       text("id: "+this.id+"\n"+
         "health: "+this.health+"\n"+
         "idle_state : "+this.idle_state +"\n"+
-        "internalGraph size : "+internalGraph.graph.keySet().size()+"\n"+
-        "teamGraph size : "+team.graph.graph.keySet().size()+"\n"+
-        "communication status :" + communicationPossible+"\n"+
+        "internalGraph size : "+internalKnowledge.graph.keySet().size()+"\n"+
+        "teamGraph size : "+team.knowledgeBase.graph.keySet().size()+"\n"+
+        "communication status :" + team.communicationHandler.connectionIsUp()+"\n"+
         "DIRECTION : "+Compass.getDirection(this) +"\n"
       , width - 145, 35 );
   }

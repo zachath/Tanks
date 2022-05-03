@@ -62,9 +62,16 @@ void keyPressed() {
     debugOn = !debugOn;
   }
   
+  //shutdown communications
   if(key == 'f') {
     for(Team team : teams) {
-      team.communicationHandler.turnOff();
+      //switch connectionstatus on or off depending on current status
+      if(team.communicationHandler.connectionIsUp()) {
+        team.communicationHandler.turnOff();
+      }
+      else {
+        team.communicationHandler.turnOn();
+      }
     }
   }
 }

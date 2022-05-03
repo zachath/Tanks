@@ -16,7 +16,7 @@ class Team {
 
   int numberOfHits; // sammalagda antalet bekräftade träffar på andra lagets tanks. 
   
-  Graph graph;
+  KnowledgeBase knowledgeBase;
   CommunicationHandler communicationHandler;
 
   Team (int team_id, int tank_size, color c, 
@@ -37,7 +37,7 @@ class Team {
     tanks[1] = new Tank(tank1_id, this, this.tank1_startpos, this.tank_size, ball1);
     tanks[2] = new Tank(tank2_id, this, this.tank2_startpos, this.tank_size, ball2);
     
-    graph = new Graph(this);
+    knowledgeBase = new KnowledgeBase(this);
     communicationHandler = new CommunicationHandler(this);
     
     if (this.id==0) {this.homebase_x = 0; this.homebase_y = 0;}
