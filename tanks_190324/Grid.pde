@@ -190,6 +190,23 @@ class Grid {
            return true;
         }
        return false;
-    }
+  }
   
+  public ArrayList<Node> getNeighbours(Node current) {
+      ArrayList<Node> neighbouringNodes = new ArrayList<>();
+      
+      for (int i = 0; i < col_directions.length; i++) {
+        int newCol = current.col + col_directions[i];
+        int newRow = current.row + row_directions[i];
+        
+        //Skip out of bounds.
+        if(grid.outOfBounds(newCol, newRow)) {
+          continue;
+        }
+        
+        neighbouringNodes.add(grid.nodes[newCol][newRow]);
+      }
+      
+      return neighbouringNodes;
+    }
 }

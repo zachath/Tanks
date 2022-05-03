@@ -1,10 +1,8 @@
+import java.util.HashSet;
 class KnowledgeBase {
-  HashMap<Node, ArrayList<Node>> graph = new HashMap<>();
+  HashMap<Node, HashSet<Node>> graph = new HashMap<>();
   boolean[][] visited = new boolean[grid.cols][grid.rows];
   boolean[][] seen = new boolean[grid.cols][grid.rows];
-  
-  int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
-  int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
   
   Team team;
   
@@ -20,7 +18,7 @@ class KnowledgeBase {
         for(Node n : nArr) {
           if(isHomeNode(n)) {
             markVisit(n);
-            connectNodes(n, getNeighbours(n));
+            connectNodes(n, grid.getNeighbours(n));
           }
         }
       }
@@ -48,7 +46,7 @@ class KnowledgeBase {
         graph.get(n1).add(n2);
       }
       else {
-        ArrayList<Node> tmp = new ArrayList();
+        HashSet<Node> tmp = new HashSet();
         tmp.add(n2);
         graph.put(n1, tmp);
       }
@@ -56,37 +54,42 @@ class KnowledgeBase {
     
     public void connectNodes(Node current, ArrayList<Node> nodes) {
       if (graph.containsKey(current)) {
-        for(Node n : nodes) {
-          if(!isConnected(current, n)) {
-            graph.get(current).add(n);
-          }
-        }
+        graph.get(current).addAll(nodes);
       }
       else {
-        graph.put(current, nodes);
+        graph.put(current, new HashSet<Node>(nodes));
       }
       
       for (Node node : nodes) {
-        if (graph.containsKey(node)) {
-          if(!isConnected(node, current)) {
-            graph.get(node).add(current);
-          }
-        }
+        connectNodes(node, current);
+      }
+    }
+    
+    public void connectNodes(Node current, HashSet<Node> nodes) {
+      if (graph.containsKey(current)) {
+        graph.get(current).addAll(nodes);
+      }
       else {
-          ArrayList<Node> tmp = new ArrayList<>();
-          tmp.add(current);
-          graph.put(node, tmp);
-        }
+        graph.put(current, new HashSet<Node>(nodes));
+      }
+      
+      for (Node node : nodes) {
+        connectNodes(node, current);
       }
     }
     
     boolean isConnected(Node source, Node target) {
-      for(Node n : graph.get(source)) {
+      if(graph.get(source).contains(target)) {
+        return true;
+      }
+      
+      return false;
+      /*for(Node n : graph.get(source)) {
         if(n == target) {
           return true;
         }
       }
-      return false;
+      return false;*/
     }
     
     public LinkedList<Node> findPathHome(Node start) {
@@ -160,32 +163,19 @@ class KnowledgeBase {
         return !graph.get(currentNode).contains(nextNode) || graph.get(nextNextNode).contains(currentNode);
     }
     
-    public ArrayList<Node> getNeighbours(Node current) {
-      ArrayList<Node> neighbouringNodes = new ArrayList<>();
-      
-      for (int i = 0; i < col_directions.length; i++) {
-        int newCol = current.col + col_directions[i];
-        int newRow = current.row + row_directions[i];
-        
-        //Skip out of bounds.
-        if(grid.outOfBounds(newCol, newRow)) {
-          continue;
-        }
-        
-        Node n = grid.nodes[newCol][newRow];
-
-        if(!visited[newCol][newRow]) {
-          markSeen(n);
-        }
-        
-        neighbouringNodes.add(n);
-      }
-      
+    public void checkNeighbours(Node current) {
       markVisit(current);
-      return neighbouringNodes;
+      ArrayList<Node> neighbours = grid.getNeighbours(current);
+      for(Node n : neighbours) {
+        if(!visited[n.col][n.row]) {
+          markSeen(n);
+          connectNodes(current, n);
+          connectNodes(n, current);
+        }
+      }
     }
     
-    public void checkNeighbours(Node current) {
+    public void LOSCheckNeighbours(Node current) {
       for (int i = 0; i < col_directions.length; i++) {
         int newCol = current.col + col_directions[i];
         int newRow = current.row + row_directions[i];
@@ -202,5 +192,14 @@ class KnowledgeBase {
           connectNodes(n, current);
         }
       }
+    }
+    
+    public void merge(KnowledgeBase source) {
+      //update each key with the values from source
+      for(Node n : source.graph.keySet()) {
+        connectNodes(n, source.graph.get(n));
+      }
+      
+      //TO-DO: fixa visited och seen
     }
 }

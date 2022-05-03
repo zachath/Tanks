@@ -17,7 +17,7 @@ public class AgentTank extends Tank {
    
       Node currentNode = grid.getNearestNode(startpos);
       team.knowledgeBase.markVisit(currentNode);
-      team.knowledgeBase.connectNodes(currentNode, team.knowledgeBase.getNeighbours(currentNode));
+      team.knowledgeBase.connectNodes(currentNode, grid.getNeighbours(currentNode));
     }
     
     void moveTo(PVector coord) {
@@ -34,10 +34,10 @@ public class AgentTank extends Tank {
       Node n = grid.getNearestNode(coord);
       LOS();
       if(team.communicationHandler.connectionIsUp()) {
-        team.knowledgeBase.connectNodes(n, team.knowledgeBase.getNeighbours(n));
+        team.knowledgeBase.checkNeighbours(n);
       }
       else {
-        internalKnowledge.connectNodes(n, internalKnowledge.getNeighbours(n));
+        internalKnowledge.checkNeighbours(n);
       }
     }
   }
@@ -51,15 +51,16 @@ public class AgentTank extends Tank {
       
       LOS();
       
-      ArrayList<Node> neighbouringNodes;
-      if(team.communicationHandler.connectionIsUp()) {
-        neighbouringNodes = team.knowledgeBase.getNeighbours(currentNode);
-      }
-      else {
-        neighbouringNodes = internalKnowledge.getNeighbours(currentNode);
-      }
-      
+      ArrayList<Node> neighbouringNodes = grid.getNeighbours(currentNode);
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
+      
+      if(team.communicationHandler.connectionIsUp()) {
+          team.knowledgeBase.checkNeighbours(currentNode);
+        }
+        
+        else {
+          internalKnowledge.checkNeighbours(currentNode);
+        }
       
       for (Node n : neighbouringNodes) {
         lookForTanks(n);
@@ -79,9 +80,6 @@ public class AgentTank extends Tank {
           }
         }
       }
-      
-      println("Neighbours: " + neighbouringNodes.size());
-      println("Unvisited: " + unvisitedNeighbours.size());
       
       println(String.format("Currently at: %d : %d", currentNode.col, currentNode.row));
       if (unvisitedNeighbours.size() == 0) {
@@ -124,7 +122,7 @@ public class AgentTank extends Tank {
         
         if (!tmp.visited[seenNode.col][seenNode.row]) {
           tmp.markSeen(seenNode);
-          tmp.checkNeighbours(seenNode);
+          tmp.LOSCheckNeighbours(seenNode);
         }
         
         lookForTanks(seenNode);

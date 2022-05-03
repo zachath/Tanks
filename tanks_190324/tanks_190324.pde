@@ -63,6 +63,9 @@ Timer timer;
 int startTime = 15; //minutes 
 int remainingTime;
 
+int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
+int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
+
 void setup(){
   size(800, 800);
   

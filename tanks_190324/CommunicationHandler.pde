@@ -1,3 +1,4 @@
+import java.util.HashSet;
 class CommunicationHandler {
   private boolean connectionUp;
   private boolean teamIsUpToDate;
@@ -37,7 +38,7 @@ class CommunicationHandler {
   }
   
   private void updateKnowledge(AgentTank agent) {
-    agent.internalKnowledge.graph = new HashMap<Node, ArrayList<Node>>(team.knowledgeBase.graph);
+    agent.internalKnowledge.graph = new HashMap<>(team.knowledgeBase.graph);
     agent.internalKnowledge.visited = (boolean[][]) team.knowledgeBase.visited.clone();
     agent.internalKnowledge.seen = (boolean[][]) team.knowledgeBase.seen.clone();
   }
@@ -46,10 +47,8 @@ class CommunicationHandler {
     println("merging...");
     for(Tank t : team.tanks) {
       if (t instanceof AgentTank) {
-         //AgentTank agent = (AgentTank) t;   
-         //team.graph.mergeGraph(agent.internalGraph.graph);
-         //team.graph.mergeVisited(agent.internalGraph.visited);
-         //team.graph.mergeSeen(agent.internalGraph.seen);
+         AgentTank agent = (AgentTank) t;   
+         team.knowledgeBase.merge(agent.internalKnowledge);
        }
     }
     teamIsUpToDate = true;
