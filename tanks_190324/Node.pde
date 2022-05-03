@@ -9,7 +9,6 @@ class Node {
   
   PVector position;
   int col, row;
-  boolean seen;
   Sprite content;
   color c;
   boolean isEmpty;

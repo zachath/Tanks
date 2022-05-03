@@ -1,4 +1,5 @@
 public class AgentTank extends Tank {
+    private final static int LOS_LENGTH = 5;
     boolean started;
     Node currentNode;
     
@@ -18,15 +19,13 @@ public class AgentTank extends Tank {
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
-      
-      //startposition = homenode
+   
       currentNode = grid.getNearestNode(startpos);
       homeNode = currentNode;
       team.visited[currentNode.col][currentNode.row] = true;
       connectNodes(currentNode, getNeighbours(currentNode));
       
       connectHomeBaseNodes();
-      
     }
     
     //Lägg till alla hembasnoder till "minnet"
@@ -50,6 +49,7 @@ public class AgentTank extends Tank {
       this.targetPosition.set(coord);
       this.hasTarget = true;
     }
+    
     if(userControlled) {
       Node n = grid.getNearestNode(coord);
       connectNodes(n, getNeighbours(n)); 
@@ -62,8 +62,8 @@ public class AgentTank extends Tank {
     }
     
     public void markSeen(Node n) {
+      team.seen[n.col][n.row] = true;
       grid.changeColorOfNode(n, color(255, 204, 0));
-      n.seen = true;
     }
     
     public void initialize() {
@@ -72,8 +72,6 @@ public class AgentTank extends Tank {
     //Random walk.
     public void patrol() {
       currentNode = grid.getNearestNode(getRealPosition());
-      
-      println(String.format("Heading: %s", test));
       LOS();
       
       ArrayList<Node> neighbouringNodes = getNeighbours(currentNode);
@@ -101,7 +99,13 @@ public class AgentTank extends Tank {
       }
     }
     
-    private final static int LOS_LENGTH = 5;
+    private boolean outOfBounds(int col, int row) {
+      if (row < 0 || col < 0 || row >= grid.rows || col >= grid.cols) {
+           return true;
+        }
+       return false;
+    }
+
     public void LOS() {
       Direction tankDirection = Compass.getDirection(this);
       int newCol = currentNode.col;
@@ -113,15 +117,17 @@ public class AgentTank extends Tank {
         newRow += tankDirection.rowStep;
         
         //Skip out of bounds.
-        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
-           continue;
+        if(outOfBounds(newCol, newRow)) {
+          continue;
         }
         
         Node seenNode = grid.nodes[newCol][newRow];
+        
         if (!team.visited[seenNode.col][seenNode.row]) {
           markSeen(seenNode);
           checkNeighbours(seenNode);
         }
+        
         lookForTanks(seenNode);
       }
     }
@@ -179,13 +185,13 @@ public class AgentTank extends Tank {
         int newRow = current.row + row_directions[i];
         
         //Skip out of bounds.
-        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
-           continue;
+        if(outOfBounds(newCol, newRow)) {
+          continue;
         }
         
         Node n = grid.nodes[newCol][newRow];
 
-        if (n.seen) {
+        if (team.seen[n.col][n.row]) {
           connectNodes(current, n);
           connectNodes(n, current);
         }
@@ -200,8 +206,8 @@ public class AgentTank extends Tank {
         int newRow = current.row + row_directions[i];
         
         //Skip out of bounds.
-        if (newRow < 0 || newCol < 0 || newRow >= grid.rows || newCol >= grid.cols) {
-           continue;
+        if(outOfBounds(newCol, newRow)) {
+          continue;
         }
         
         Node n = grid.nodes[newCol][newRow];
@@ -231,16 +237,16 @@ public class AgentTank extends Tank {
         return !searching;
     }
     
-    public void findHome() {
+    public void notifyTank() {
       println(id + ": findHome");
       searching = false;
       homeBound = true;
-      findShortestPathHome();
+      findPathHome();
     }
    
     
     //Söker igenom instansens internalGraph (graf över kända noder) med hjälp av breadth-first search för att hitta en väg från tankens nuvarande position till en nod i hembasen. 
-    public void findShortestPathHome() {
+    public void findPathHome() {
       Node start = grid.getNearestNode(getRealPosition()); 
       LinkedList<Node> visited = new LinkedList<>(); //här lagras alla noder som algoritmen besöker
       

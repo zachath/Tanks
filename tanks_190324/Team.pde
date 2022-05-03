@@ -18,6 +18,7 @@ class Team {
   
   HashMap<Node, ArrayList<Node>> graph = new HashMap<>();
   boolean[][] visited = new boolean[grid.cols][grid.rows];
+  boolean[][] seen = new boolean[grid.cols][grid.rows];
 
 
   Team (int team_id, int tank_size, color c, 
@@ -48,7 +49,7 @@ class Team {
     for (Tank t : tanks) {
       if (t instanceof AgentTank) {
         AgentTank agent = (AgentTank) t;
-        agent.findHome();
+        agent.notifyTank();
       }
     }
   }
