@@ -12,14 +12,11 @@ public class AgentTank extends Tank {
     Graph internalGraph;
     LinkedList<Node> pathHome = new LinkedList<>();
     
-    //Neighbouring nodes.
-    int[] col_directions = {0, 0, 1, -1, -1, -1, 1, 1};
-    int[] row_directions = {-1, 1, 0, 0, -1, 1, -1, 1};
-    
     AgentTank(int id, Team team, PVector startpos, float diameter, CannonBall ball) {
       super(id, team, startpos, diameter, ball);
       started = false;
       internalGraph = new Graph(team);
+      communicationPossible = true;
    
       currentNode = grid.getNearestNode(startpos);
       if(communicationPossible) {
@@ -148,7 +145,13 @@ public class AgentTank extends Tank {
           
           if (other.team.id != this.team.id) {
             println("Found enemy tank, stoping search.");
-            team.notifyTeam();
+            
+            if (communicationPossible) {
+              team.notifyTeam();
+            }
+            else {
+              this.notifyTank();
+            }
           }
         }
     }

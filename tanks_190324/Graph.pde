@@ -122,7 +122,7 @@ class Graph {
           if (isHomeNode(n)) {
             visitedNodes.add(n);
             queue.clear();
-            println("FOund home");
+            println("Found home");
             break;
           }
           queue.add(n);
