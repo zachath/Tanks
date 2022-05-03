@@ -1,3 +1,8 @@
+//call to CommunicationHandler update()
+void updateCommunications() {
+  teams[0].communicationHandler.update();
+  teams[1].communicationHandler.update();
+}
 
 // call to Team updateLogic()
 void updateTeamsLogic() {

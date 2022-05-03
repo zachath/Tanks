@@ -18,14 +18,8 @@ public class AgentTank extends Tank {
       communicationPossible = true;
    
       Node currentNode = grid.getNearestNode(startpos);
-      if(communicationPossible) {
-        team.graph.markVisit(currentNode);
-        team.graph.connectNodes(currentNode, team.graph.getNeighbours(currentNode));
-      }
-      else {
-        internalGraph.markVisit(currentNode);
-        internalGraph.connectNodes(currentNode, internalGraph.getNeighbours(currentNode));
-      }
+      team.graph.markVisit(currentNode);
+      team.graph.connectNodes(currentNode, team.graph.getNeighbours(currentNode));
     }
     
     void moveTo(PVector coord) {
@@ -193,8 +187,6 @@ public class AgentTank extends Tank {
         searching = true;
         patrol();
       }
-      
-      
 
       if (!this.userControlled) {
 
@@ -217,21 +209,11 @@ public class AgentTank extends Tank {
       textSize(10);
       text("id: "+this.id+"\n"+
         "health: "+this.health+"\n"+
-        "position: ("+(int)this.position.x +","+(int)this.position.y+")"+"\n"+
-        "isMoving: "+this.isMoving+"\n"+
-        "isSpinning : "+this.isSpinning +"\n"+
-        "remaining_turns: "+this.remaining_turns +"\n"+
-        "isReady : "+this.isReady +"\n"+
-        "hasTarget : "+this.hasTarget +"\n"+
-        "stop_state : "+this.stop_state +"\n"+
-        "stop_turning_state : "+this.stop_turning_state +"\n"+
         "idle_state : "+this.idle_state +"\n"+
-        "isDestroyed : "+this.isDestroyed +"\n"+
-        "isImmobilized : "+this.isImmobilized +"\n"+
-        "targetHeading : "+this.targetHeading +"\n"+
-        "DIRECTION : "+Compass.getDirection(this) +"\n"+
-        "headingInDegrees : "+getHeadingInDegrees() + "\n"+
-        "heading_saved: "+this.heading_saved +"\n"
+        "internalGraph size : "+internalGraph.graph.keySet().size()+"\n"+
+        "teamGraph size : "+team.graph.graph.keySet().size()+"\n"+
+        "communication status :" + communicationPossible+"\n"+
+        "DIRECTION : "+Compass.getDirection(this) +"\n"
       , width - 145, 35 );
   }
   }

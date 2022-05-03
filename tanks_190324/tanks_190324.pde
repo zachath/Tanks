@@ -164,6 +164,7 @@ void draw() {
     // UPDATE LOGIC
     updateTanksLogic();
     updateTeamsLogic();
+    updateCommunications();
     
     // UPDATE TANKS
     updateTanks();

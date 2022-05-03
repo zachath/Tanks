@@ -61,6 +61,12 @@ void keyPressed() {
   if (key == 'd') {
     debugOn = !debugOn;
   }
+  
+  if(key == 'f') {
+    for(Team team : teams) {
+      team.communicationHandler.turnOff();
+    }
+  }
 }
 
 void keyReleased() {
