@@ -1,7 +1,6 @@
 public class AgentTank extends Tank {
     private final static int LOS_LENGTH = 5;
     boolean started;
-    Node startNode;
     
     int currentCol, currentRow;
     
@@ -18,14 +17,14 @@ public class AgentTank extends Tank {
       internalGraph = new Graph(team);
       communicationPossible = true;
    
-      startNode = grid.getNearestNode(startpos);
+      Node currentNode = grid.getNearestNode(startpos);
       if(communicationPossible) {
-        team.graph.markVisit(startNode);
-        team.graph.connectNodes(startNode, team.graph.getNeighbours(startNode));
+        team.graph.markVisit(currentNode);
+        team.graph.connectNodes(currentNode, team.graph.getNeighbours(currentNode));
       }
       else {
-        internalGraph.markVisit(startNode);
-        internalGraph.connectNodes(startNode, internalGraph.getNeighbours(startNode));
+        internalGraph.markVisit(currentNode);
+        internalGraph.connectNodes(currentNode, internalGraph.getNeighbours(currentNode));
       }
     }
     
@@ -41,15 +40,13 @@ public class AgentTank extends Tank {
     
     if(userControlled) {
       Node n = grid.getNearestNode(coord);
-      startNode = n;
-      
+      LOS();
       if(communicationPossible) {
         team.graph.connectNodes(n, team.graph.getNeighbours(n));
       }
       else {
         internalGraph.connectNodes(n, internalGraph.getNeighbours(n));
       }
-      LOS();
     }
   }
     
@@ -58,16 +55,16 @@ public class AgentTank extends Tank {
     
     //Random walk.
     public void patrol() {
-      startNode = grid.getNearestNode(getRealPosition());
+      Node currentNode = grid.getNearestNode(getRealPosition());
       
       LOS();
       
       ArrayList<Node> neighbouringNodes;
       if(communicationPossible) {
-        neighbouringNodes = team.graph.getNeighbours(startNode);
+        neighbouringNodes = team.graph.getNeighbours(currentNode);
       }
       else {
-        neighbouringNodes = internalGraph.getNeighbours(startNode);
+        neighbouringNodes = internalGraph.getNeighbours(currentNode);
       }
       
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
@@ -94,7 +91,7 @@ public class AgentTank extends Tank {
       println("Neighbours: " + neighbouringNodes.size());
       println("Unvisited: " + unvisitedNeighbours.size());
       
-      println(String.format("Currently at: %d : %d", startNode.col, startNode.row));
+      println(String.format("Currently at: %d : %d", currentNode.col, currentNode.row));
       if (unvisitedNeighbours.size() == 0) {
         Node node = neighbouringNodes.get((int) random(neighbouringNodes.size()));
         println(String.format("Going to: %d : %d", node.col, node.row));
@@ -109,8 +106,9 @@ public class AgentTank extends Tank {
 
     public void LOS() {
       Direction tankDirection = Compass.getDirection(this);
-      int newCol = startNode.col;
-      int newRow = startNode.row;
+      Node currentNode = grid.getNearestNode(getRealPosition());
+      int newCol = currentNode.col;
+      int newRow = currentNode.row;
       
       for (int i = 0; i < LOS_LENGTH; i++) {
         println(String.format("Direction: %s, Iteration: %d", tankDirection.name, i));
