@@ -41,15 +41,15 @@ public class AgentTank extends Tank {
     
     if(userControlled) {
       Node n = grid.getNearestNode(coord);
+      startNode = n;
       
       if(communicationPossible) {
         team.graph.connectNodes(n, team.graph.getNeighbours(n));
-        //team.graph.markVisit(n);
-        println("CONNECTED NODES");
       }
       else {
         internalGraph.connectNodes(n, internalGraph.getNeighbours(n));
       }
+      LOS();
     }
   }
     
@@ -149,6 +149,7 @@ public class AgentTank extends Tank {
             println("Found enemy tank, stoping search.");
             
             if (communicationPossible) {
+              println("notifiying!");
               team.notifyTeam();
             }
             else {
