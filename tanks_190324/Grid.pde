@@ -185,4 +185,11 @@ class Grid {
     n.addContent(s);
   }
   
+  public boolean outOfBounds(int col, int row) {
+      if (row < 0 || col < 0 || row >= grid.rows || col >= grid.cols) {
+           return true;
+        }
+       return false;
+    }
+  
 }
