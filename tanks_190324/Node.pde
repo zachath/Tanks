@@ -62,4 +62,19 @@ class Node {
   void setColor(color c) {
     this.c = c;
   }
+  
+  //Equal if same coordinates.
+  boolean equals(Object other) {
+    if (other instanceof Node) {
+      Node otherNode = (Node) other;
+      return col == otherNode.col && this.row == otherNode.row;
+    }
+    
+    return false;
+  }
+  
+  //Hashcode based on the coordinates multipled by prime numbers.
+  int hashCode() {
+    return (col * 17) * (row * 31);
+  }
 }
