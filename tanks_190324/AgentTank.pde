@@ -101,7 +101,6 @@ public class AgentTank extends Tank {
       int newRow = currentNode.row;
       
       for (int i = 0; i < LOS_LENGTH; i++) {
-        println(String.format("Direction: %s, Iteration: %d", tankDirection.name, i));
         newCol += tankDirection.colStep;
         newRow += tankDirection.rowStep;
         
