@@ -199,7 +199,18 @@ class KnowledgeBase {
       for(Node n : source.graph.keySet()) {
         connectNodes(n, source.graph.get(n));
       }
-      
-      //TO-DO: fixa visited och seen
+      //println(source.visited.length);
+      //println(source.visited[0].length);
+      for (int i = 0; i < source.visited.length - 1; i++) {
+        for (int j = 0; j < source.visited[0].length - 1; j++) {
+          if (source.visited[i][j]) {
+            markVisit(grid.nodes[i][j]);
+          }
+          
+          if (source.seen[i][j] && !visited[i][j]) {
+            markSeen(grid.nodes[i][j]);
+          }
+        }
+      }
     }
 }
