@@ -54,6 +54,7 @@ public class AgentTank extends Tank {
       ArrayList<Node> neighbouringNodes = grid.getNeighbours(currentNode);
       ArrayList<Node> unvisitedNeighbours = new ArrayList<>();
       
+      //Kontrollerar om man kan kommunicera med laget, baserat på det så används lagets KnowledgeBase eller tankens egna.
       if(team.communicationHandler.connectionIsUp()) {
           team.knowledgeBase.checkNeighbours(currentNode);
         }
@@ -68,6 +69,7 @@ public class AgentTank extends Tank {
           return;
         }
         
+        //Kontrollerar om man kan kommunicera med laget, baserat på det så används lagets KnowledgeBase eller tankens egna.
         if(team.communicationHandler.connectionIsUp()) {
           if (!team.knowledgeBase.visited[n.col][n.row]) {
             unvisitedNeighbours.add(n);
@@ -94,6 +96,7 @@ public class AgentTank extends Tank {
       }
     }
 
+    //Line Of Sight, straight ahead in the direction the tank is facing
     public void LOS() {
       Direction tankDirection = Compass.getDirection(this);
       Node currentNode = grid.getNearestNode(getRealPosition());
@@ -111,6 +114,7 @@ public class AgentTank extends Tank {
         
         Node seenNode = grid.nodes[newCol][newRow];
         
+        //Kontrollerar om man kan kommunicera med laget, baserat på det så används lagets KnowledgeBase eller tankens egna.
         KnowledgeBase tmp;
         if(team.communicationHandler.connectionIsUp()) {
           tmp = team.knowledgeBase;
@@ -146,10 +150,12 @@ public class AgentTank extends Tank {
         }
     }
     
+    //Notifies the tank that it should be going home.
     public void notifyTank() {
       println(id + ": findHome");
       searching = false;
       homeBound = true;
+      //Kontrollerar om man kan kommunicera med laget, baserat på det så används lagets KnowledgeBase eller tankens egna.
       if(team.communicationHandler.connectionIsUp()) {
         pathHome = team.knowledgeBase.findPathHome(grid.getNearestNode(getRealPosition()));
       }

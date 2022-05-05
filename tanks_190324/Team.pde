@@ -45,6 +45,7 @@ class Team {
     
   }
   
+  //Om en tank hittar en fiende och det finns en kommunikation med laget så kallas denna som notfierar hela laget att de ska hem.
   public void notifyTeam() {
     for (Tank t : tanks) {
       if (t instanceof AgentTank) {
