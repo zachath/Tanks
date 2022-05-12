@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 import java.util.HashSet;
 /* En CommunicationHandler sköter uppdateringen av agenternas respektive Teams kunskapsbaser 
    och ser till att varje agents interna kunskapsbas är identisk med kunskapsbasen i det Team de tillhör, om connectionUp = true */

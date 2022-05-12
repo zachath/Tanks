@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 public class AgentTank extends Tank {
     private final static int LOS_LENGTH = 5;
     boolean started;

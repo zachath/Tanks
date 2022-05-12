@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 static class Compass {
     
     

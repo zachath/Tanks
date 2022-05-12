@@ -1,3 +1,5 @@
+//Michael Foussianis
+//Zacharias Thorell
 import java.util.HashSet;
 /* Representerar en kunskapsbas i form av en graf av de noder som finns i Grid */
 class KnowledgeBase {
